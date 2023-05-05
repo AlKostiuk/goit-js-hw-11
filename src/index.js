@@ -1,44 +1,43 @@
-import axios from "axios";
-import Notiflix from "notiflix";
-import SimpleLightbox from "simplelightbox";
-
-
+import axios from 'axios';
+import Notiflix from 'notiflix';
+import SimpleLightbox from 'simplelightbox';
 
 const API_KEY = '35888434-3d1691753ee2e5438d46dc4b1';
-const URL = 'https://pixabay.com/api/?key='+API_KEY +'&image_type=photo&orientation=horizontal&safesearch=true&per_page=40';
+const URL =
+  'https://pixabay.com/api/?key=' +
+  API_KEY +
+  '&image_type=photo&orientation=horizontal&safesearch=true&per_page=40';
 
-
-const galleryItemHolder = document.querySelector(".gallery");
+const galleryItemHolder = document.querySelector('.gallery');
 const searchForm = document.querySelector('.search-form');
-const loadBtn = document.querySelector('.load-more')
+const loadBtn = document.querySelector('.load-more');
 let initialPage = 1;
 
-
-
 searchForm.addEventListener('submit', handlerSearch);
-loadBtn.addEventListener('click', handlerLoadButton)
+loadBtn.addEventListener('click', handlerLoadButton);
 
-async function handlerSearch(event){
-  event.preventDefault()
-  galleryItemHolder.innerHTML = "";
-  const searchQuery = searchForm.elements["searchQuery"]
-  const response = await axios.get(URL + '&q='+ encodeURIComponent(searchQuery.value))
-  if(!response.data.hits.length){
-    return Notiflix.Notify.warning("Sorry, there are no images matching your search query. Please try again.");
+async function handlerSearch(event) {
+  event.preventDefault();
+  galleryItemHolder.innerHTML = '';
+  const searchQuery = searchForm.elements['searchQuery'];
+  const response = await axios.get(
+    URL + '&q=' + encodeURIComponent(searchQuery.value)
+  );
+  if (!response.data.hits.length) {
+    return Notiflix.Notify.warning(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
   }
   console.log(response);
-  const markupResultCards = getGalleryMarkup(response.data.hits)
-  galleryItemHolder.insertAdjacentHTML("beforeend",markupResultCards)
-  loadBtn.style.visibility = "visible";
+  const markupResultCards = getGalleryMarkup(response.data.hits);
+  galleryItemHolder.insertAdjacentHTML('beforeend', markupResultCards);
+  loadBtn.style.visibility = 'visible';
   console.log(markupResultCards);
-
-
 }
-
 
 function getGalleryMarkup(items) {
   const resultMarkup = items
-    .map((item) => {
+    .map(item => {
       return `<div class="photo-card">
       <img src="${item.webformatURL}" alt="${item.tags}" loading="lazy" />
       <div class="info">
@@ -57,10 +56,9 @@ function getGalleryMarkup(items) {
       </div>
     </div>`;
     })
-    .join("");
+    .join('');
   return resultMarkup;
 }
-
 
 async function handlerLoadButton() {
   initialPage += 1;
