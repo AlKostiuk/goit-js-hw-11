@@ -28,12 +28,13 @@ async function handlerSearch(event) {
       'Sorry, there are no images matching your search query. Please try again.'
     );
   }
-  console.log(response);
+  const totalHits = response.data.totalHits;
   const markupResultCards = getGalleryMarkup(response.data.hits);
   galleryItemHolder.insertAdjacentHTML('beforeend', markupResultCards);
   loadBtn.style.visibility = 'visible';
-  console.log(markupResultCards);
+  Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
 }
+
 
 function getGalleryMarkup(items) {
   const resultMarkup = items
@@ -63,8 +64,11 @@ function getGalleryMarkup(items) {
 async function handlerLoadButton() {
   initialPage += 1;
   let pageLoader;
+  const searchQuery = searchForm.elements['searchQuery'];
   try {
-    pageLoader = await axios.get(URL + '&page=' + initialPage);
+    pageLoader = await axios.get(
+      URL + `&q=${encodeURIComponent(searchQuery.value)}&page=${initialPage}`
+    );
   } catch (error) {
     Notiflix.Notify.failure(
       'Were sorry, but you ve reached the end of search results.'
