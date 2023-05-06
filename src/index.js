@@ -19,11 +19,13 @@ loadBtn.addEventListener('click', handlerLoadButton);
 async function handlerSearch(event) {
   event.preventDefault();
   galleryItemHolder.innerHTML = '';
+  initialPage = 1;
   const searchQuery = searchForm.elements['searchQuery'];
   const response = await axios.get(
     URL + '&q=' + encodeURIComponent(searchQuery.value)
   );
   if (!response.data.hits.length) {
+    loadBtn.style.visibility = 'hidden';
     return Notiflix.Notify.warning(
       'Sorry, there are no images matching your search query. Please try again.'
     );
@@ -31,7 +33,7 @@ async function handlerSearch(event) {
   const totalHits = response.data.totalHits;
   const markupResultCards = getGalleryMarkup(response.data.hits);
   galleryItemHolder.insertAdjacentHTML('beforeend', markupResultCards);
-  loadBtn.style.visibility = 'visible';
+  loadBtn.style.visibility = 'visible'; 
   Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
 }
 
@@ -73,8 +75,16 @@ async function handlerLoadButton() {
     Notiflix.Notify.failure(
       'Were sorry, but you ve reached the end of search results.'
     );
+    loadBtn.style.display = 'none';
     throw error;
   }
   const markupResultAfterLoadMore = getGalleryMarkup(pageLoader.data.hits);
   galleryItemHolder.insertAdjacentHTML('beforeend', markupResultAfterLoadMore);
+
+  if (pageLoader.data.hits.length < 1) {
+    Notiflix.Notify.failure(
+      'Were sorry, but you ve reached the end of search results.'
+    );
+    loadBtn.style.display = 'none';
+  }
 }
